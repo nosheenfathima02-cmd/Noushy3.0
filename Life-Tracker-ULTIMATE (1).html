@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nousheen's Life Tracker - Complete</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            background: #f0f0f0;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-button {
+            flex: 1;
+            min-width: 120px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-size: 1em;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            background: #e9ecef;
+        }
+
+        .tab-button.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .item.completed {
+            opacity: 0.6;
+        }
+
+        .item.completed .item-title {
+            text-decoration: line-through;
+        }
+
+        .item-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-top: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .item-details {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9em;
+            padding: 8px 12px;
+            border-radius: 5px;
+            flex-shrink: 0;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        .checkbox-item {
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .checkbox-item input {
+            width: 22px;
+            height: 22px;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        .checkbox-item.completed {
+            background: #d4edda;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 0;
+            border-radius: 12px;
+            max-width: 550px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .close-modal {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        /* Ramadan Chart Styles */
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chart-title {
+            text-align: center;
+            color: #8B4513;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .chart-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+
+        .day-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 20px;
+            background: #FFF9E6;
+            border-radius: 15px;
+            border: 3px solid #D2B48C;
+        }
+
+        .day-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #D2B48C;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #8B4513;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 auto;
+        }
+
+        .day-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .day-circle.completed {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: white;
+            border-color: #FFA500;
+        }
+
+        .juz-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            padding: 20px;
+            background: #E8F5E9;
+            border-radius: 15px;
+            border: 3px solid #81C784;
+        }
+
+        .juz-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #81C784;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1em;
+            font-weight: bold;
+            color: #2E7D32;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 auto;
+        }
+
+        .juz-circle:hover {
+            transform: scale(1.1);
+        }
+
+        .juz-circle.completed {
+            background: linear-gradient(135deg, #66BB6A, #43A047);
+            color: white;
+            border-color: #43A047;
+        }
+
+        .prayer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .prayer-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #9C27B0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 0 auto;
+        }
+
+        .prayer-circle:hover {
+            transform: scale(1.05);
+        }
+
+        .prayer-circle.completed {
+            background: linear-gradient(135deg, #BA68C8, #9C27B0);
+            color: white;
+            border-color: #7B1FA2;
+        }
+
+        .prayer-name {
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .prayer-time {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .prayer-circle.completed .prayer-time {
+            color: #FFE;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+            .tab-button {
+                font-size: 0.85em;
+                padding: 12px 8px;
+            }
+            .day-circle, .juz-circle {
+                width: 50px;
+                height: 50px;
+                font-size: 1em;
+            }
+            .prayer-circle {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Nousheen's Life Tracker</h1>
+            <p>Complete Life Management System</p>
+            <div class="header-buttons">
+                <button class="btn" onclick="enableNotifications()">🔔 Enable Notifications</button>
+                <button class="btn" onclick="testSound()">🔊 Test Sound</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('personal')">👤 Personal</button>
+            <button class="tab-button" onclick="switchTab('health')">💪 Health</button>
+            <button class="tab-button" onclick="switchTab('religious')">🌙 Ramadan</button>
+            <button class="tab-button" onclick="switchTab('professional')">💼 Professional</button>
+        </div>
+
+        <!-- Personal Tab -->
+        <div id="personal" class="tab-content active">
+            <div class="section">
+                <h3>📚 Education</h3>
+                <div id="education-list"></div>
+                <button class="btn-primary" onclick="openModal('education')">+ Add Item</button>
+            </div>
+            <div class="section">
+                <h3>✈️ Visa Process</h3>
+                <div id="visa-list"></div>
+                <button class="btn-primary" onclick="openModal('visa')">+ Add Item</button>
+            </div>
+            <div class="section">
+                <h3>🚗 Driving License</h3>
+                <div id="license-list"></div>
+                <button class="btn-primary" onclick="openModal('license')">+ Add Item</button>
+            </div>
+        </div>
+
+        <!-- Health Tab -->
+        <div id="health" class="tab-content">
+            <div class="section">
+                <h3>✅ Daily Habits</h3>
+                <div class="checkbox-item" id="habit-wakeup-item">
+                    <input type="checkbox" id="habit-wakeup" onchange="saveHabit('wakeup')">
+                    <label>Woke up on time</label>
+                </div>
+                <div class="checkbox-item" id="habit-water-item">
+                    <input type="checkbox" id="habit-water" onchange="saveHabit('water')">
+                    <label>Drank enough water</label>
+                </div>
+                <div class="checkbox-item" id="habit-veg-item">
+                    <input type="checkbox" id="habit-veg" onchange="saveHabit('veg')">
+                    <label>Ate vegetables</label>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>⚖️ Weight Tracking</h3>
+                <div id="weight-list"></div>
+                <button class="btn-primary" onclick="openModal('weight')">+ Add Weight Entry</button>
+            </div>
+            
+            <div class="section">
+                <h3>📝 Health Notes</h3>
+                <div id="health-notes-list"></div>
+                <button class="btn-primary" onclick="openModal('healthNote')">+ Add Note</button>
+            </div>
+        </div>
+
+        <!-- Religious/Ramadan Tab -->
+        <div id="religious" class="tab-content">
+            <!-- Fasting Chart -->
+            <div class="chart-container">
+                <div class="chart-title">🌙 My Fasting Progress</div>
+                <div class="chart-subtitle">Tap a star for each day you fasted this Ramadan!</div>
+                <div class="day-grid" id="fasting-chart"></div>
+            </div>
+
+            <!-- Taraweeh Chart -->
+            <div class="chart-container">
+                <div class="chart-title">🕌 My Taraweeh Progress</div>
+                <div class="chart-subtitle">Tap a circle for each day you prayed Taraweeh!</div>
+                <div class="day-grid" id="taraweeh-chart"></div>
+            </div>
+
+            <!-- Quran Reading Chart -->
+            <div class="chart-container">
+                <div class="chart-title">📖 My Quran Reading Progress</div>
+                <div class="chart-subtitle">Tap a circle for each day you read Quran!</div>
+                <div class="day-grid" id="quran-reading-chart"></div>
+            </div>
+
+            <!-- 5 Daily Prayers Chart -->
+            <div class="chart-container">
+                <div class="chart-title">🕌 My 5 Daily Prayers Chart</div>
+                <div class="chart-subtitle">Track your daily prayers</div>
+                <div class="prayer-grid" id="five-prayers-chart"></div>
+            </div>
+
+            <!-- 30 Juz Chart -->
+            <div class="chart-container">
+                <div class="chart-title">📗 30 Juz Completion</div>
+                <div class="chart-subtitle">Mark each Juz as you complete it!</div>
+                <div class="juz-grid" id="juz-chart"></div>
+            </div>
+            
+            <div class="section">
+                <h3>📖 Quran Surah Memorization (All 114 Surahs)</h3>
+                <div id="quran-list"></div>
+                <button class="btn-primary" onclick="openModal('quran')">+ Track Surah</button>
+            </div>
+            
+            <div class="section">
+                <h3>🌙 Ramadan Daily Checklist</h3>
+                <div class="checkbox-item"><input type="checkbox" id="ramadan-suhoor" onchange="saveRamadan('suhoor')"><label>🌅 Had Suhoor</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="ramadan-iftar" onchange="saveRamadan('iftar')"><label>🌙 Had Iftar</label></div>
+                <div class="checkbox-item"><input type="checkbox" id="ramadan-listen" onchange="saveRamadan('listen')"><label>🎧 Listened to Islamic Content</label></div>
+                
+                <h4 style="margin:20px 0 10px 0; color:#28a745;">✨ Good Deeds Today</h4>
+                <div id="good-deeds-list"></div>
+                <button class="btn-primary" onclick="openModal('goodDeed')">+ Record Good Deed</button>
+                
+                <h4 style="margin:20px 0 10px 0; color:#dc3545;">⚠️ Mistakes to Avoid</h4>
+                <div id="bad-deeds-list"></div>
+                <button class="btn-primary" onclick="openModal('badDeed')" style="background:#dc3545;">+ Record & Learn</button>
+            </div>
+        </div>
+
+        <!-- Professional Tab -->
+        <div id="professional" class="tab-content">
+            <div class="section">
+                <h3>🏫 School Tasks</h3>
+                <div id="school-list"></div>
+                <button class="btn-primary" onclick="openModal('school')">+ Add Task</button>
+            </div>
+            <div class="section">
+                <h3>🎬 Video Creation</h3>
+                <div id="video-list"></div>
+                <button class="btn-primary" onclick="openModal('video')">+ Add Video</button>
+            </div>
+            <div class="section">
+                <h3>📝 Lesson Plans</h3>
+                <div id="lesson-list"></div>
+                <button class="btn-primary" onclick="openModal('lesson')">+ Add Lesson</button>
+            </div>
+            <div class="section">
+                <h3>⏰ Reminders (With Sound Notification)</h3>
+                <div id="reminders-list"></div>
+                <button class="btn-primary" onclick="openModal('reminder')">+ Add Reminder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add Item</h3>
+                <button class="close-modal" onclick="closeModal()">×</button>
+            </div>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // TAB SWITCHING
+        // ═══════════════════════════════════════════════════════════
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabName)) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const content = document.getElementById(tabName);
+            if (content) {
+                content.classList.add('active');
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // GLOBAL STATE & DATA
+        // ═══════════════════════════════════════════════════════════
+        
+        let appData = {
+            personal: { 
+                education: [], 
+                visa: [], 
+                license: [] 
+            },
+            health: { 
+                habits: {}, 
+                notes: [],
+                weight: []
+            },
+            religious: { 
+                prayers: {}, 
+                quran: [], 
+                ramadan: {},
+                goodDeeds: [],
+                badDeeds: [],
+                fastingChart: {},
+                taraweehChart: {},
+                quranReadingChart: {},
+                juzChart: {},
+                fivePrayersChart: {}
+            },
+            professional: { 
+                school: [], 
+                video: [], 
+                lesson: [], 
+                reminders: [] 
+            }
+        };
+
+        // Prayer times
+        const PRAYER_TIMES = {
+            fajr: { hour: 5, minute: 30, display: '5:30 AM' },
+            dhuhr: { hour: 12, minute: 30, display: '12:30 PM' },
+            asr: { hour: 15, minute: 45, display: '3:45 PM' },
+            maghrib: { hour: 18, minute: 15, display: '6:15 PM' },
+            isha: { hour: 19, minute: 45, display: '7:45 PM' }
+        };
+
+        // ═══════════════════════════════════════════════════════════
+        // NOTIFICATION SOUND
+        // ═══════════════════════════════════════════════════════════
+        
+        function playNotificationSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+                
+                const oscillator2 = audioContext.createOscillator();
+                const gainNode2 = audioContext.createGain();
+                oscillator2.connect(gainNode2);
+                gainNode2.connect(audioContext.destination);
+                
+                oscillator2.frequency.value = 1000;
+                oscillator2.type = 'sine';
+                gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime + 0.35);
+                gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.65);
+                
+                oscillator2.start(audioContext.currentTime + 0.35);
+                oscillator2.stop(audioContext.currentTime + 0.65);
+                
+            } catch (e) {
+                console.error('Sound not supported:', e);
+            }
+        }
+
+        function testSound() {
+            playNotificationSound();
+            alert('Sound test! Did you hear it?');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // NOTIFICATIONS
+        // ═══════════════════════════════════════════════════════════
+        
+        function enableNotifications() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support notifications. Using sound alerts instead!");
+                playNotificationSound();
+                return;
+            }
+
+            if (Notification.permission === "granted") {
+                alert("Notifications already enabled! ✅");
+                return;
+            }
+
+            if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification("Notifications Enabled! 🔔", {
+                            body: "You'll receive prayer and reminder notifications"
+                        });
+                        playNotificationSound();
+                    } else {
+                        alert("Don't worry! You'll still get sound alerts. 🔊");
+                    }
+                });
+            }
+        }
+
+        function showNotification(title, body) {
+            playNotificationSound();
+            
+            if (Notification.permission === "granted") {
+                new Notification(title, { body: body });
+            } else {
+                alert(title + "\n\n" + body);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // RAMADAN CHARTS
+        // ═══════════════════════════════════════════════════════════
+        
+        function renderFastingChart() {
+            const container = document.getElementById('fasting-chart');
+            container.innerHTML = '';
+            for (let i = 1; i <= 30; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'day-circle';
+                if (appData.religious.fastingChart[i]) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '⭐';
+                } else {
+                    circle.textContent = i;
+                }
+                circle.onclick = () => toggleFastingDay(i);
+                container.appendChild(circle);
+            }
+        }
+
+        function toggleFastingDay(day) {
+            appData.religious.fastingChart[day] = !appData.religious.fastingChart[day];
+            saveData();
+            renderFastingChart();
+        }
+
+        function renderTaraweehChart() {
+            const container = document.getElementById('taraweeh-chart');
+            container.innerHTML = '';
+            for (let i = 1; i <= 29; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'day-circle';
+                if (appData.religious.taraweehChart[i]) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '✅';
+                } else {
+                    circle.textContent = i;
+                }
+                circle.onclick = () => toggleTaraweehDay(i);
+                container.appendChild(circle);
+            }
+        }
+
+        function toggleTaraweehDay(day) {
+            appData.religious.taraweehChart[day] = !appData.religious.taraweehChart[day];
+            saveData();
+            renderTaraweehChart();
+        }
+
+        function renderQuranReadingChart() {
+            const container = document.getElementById('quran-reading-chart');
+            container.innerHTML = '';
+            for (let i = 1; i <= 29; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'day-circle';
+                if (appData.religious.quranReadingChart[i]) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = '📖';
+                } else {
+                    circle.textContent = i;
+                }
+                circle.onclick = () => toggleQuranReadingDay(i);
+                container.appendChild(circle);
+            }
+        }
+
+        function toggleQuranReadingDay(day) {
+            appData.religious.quranReadingChart[day] = !appData.religious.quranReadingChart[day];
+            saveData();
+            renderQuranReadingChart();
+        }
+
+        function renderJuzChart() {
+            const container = document.getElementById('juz-chart');
+            container.innerHTML = '';
+            for (let i = 1; i <= 30; i++) {
+                const circle = document.createElement('div');
+                circle.className = 'juz-circle';
+                if (appData.religious.juzChart[i]) {
+                    circle.classList.add('completed');
+                    circle.innerHTML = `<div>Juz ${i}</div><div style="font-size:1.5em;">✓</div>`;
+                } else {
+                    circle.innerHTML = `Juz<br>${i}`;
+                }
+                circle.onclick = () => toggleJuz(i);
+                container.appendChild(circle);
+            }
+        }
+
+        function toggleJuz(juz) {
+            appData.religious.juzChart[juz] = !appData.religious.juzChart[juz];
+            saveData();
+            renderJuzChart();
+        }
+
+        function renderFivePrayersChart() {
+            const container = document.getElementById('five-prayers-chart');
+            container.innerHTML = '';
+            
+            Object.entries(PRAYER_TIMES).forEach(([prayer, time]) => {
+                const circle = document.createElement('div');
+                circle.className = 'prayer-circle';
+                
+                const today = new Date().toDateString();
+                const key = `${today}-${prayer}`;
+                
+                if (appData.religious.fivePrayersChart[key]) {
+                    circle.classList.add('completed');
+                }
+                
+                circle.innerHTML = `
+                    <div class="prayer-name">${prayer.charAt(0).toUpperCase() + prayer.slice(1)}</div>
+                    <div class="prayer-time">${time.display}</div>
+                `;
+                circle.onclick = () => toggleFivePrayer(prayer);
+                container.appendChild(circle);
+            });
+        }
+
+        function toggleFivePrayer(prayer) {
+            const today = new Date().toDateString();
+            const key = `${today}-${prayer}`;
+            appData.religious.fivePrayersChart[key] = !appData.religious.fivePrayersChart[key];
+            saveData();
+            renderFivePrayersChart();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // MODAL MANAGEMENT
+        // ═══════════════════════════════════════════════════════════
+        
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            
+            const modals = {
+                education: {
+                    title: 'Add Education Item',
+                    html: `
+                        <input type="text" id="input-title" placeholder="Title" required>
+                        <textarea id="input-details" placeholder="Details..." rows="3"></textarea>
+                        <input type="date" id="input-deadline">
+                        <button class="btn-primary" onclick="submitModal('education')">Add</button>
+                    `
+                },
+                visa: {
+                    title: 'Add Visa Item',
+                    html: `
+                        <input type="text" id="input-title" placeholder="Title" required>
+                        <textarea id="input-details" placeholder="Details..." rows="3"></textarea>
+                        <input type="date" id="input-deadline">
+                        <button class="btn-primary" onclick="submitModal('visa')">Add</button>
+                    `
+                },
+                license: {
+                    title: 'Add License Item',
+                    html: `
+                        <input type="text" id="input-title" placeholder="Title" required>
+                        <textarea id="input-details" placeholder="Details..." rows="3"></textarea>
+                        <input type="date" id="input-deadline">
+                        <button class="btn-primary" onclick="submitModal('license')">Add</button>
+                    `
+                },
+                weight: {
+                    title: 'Add Weight Entry',
+                    html: `
+                        <input type="date" id="input-date" value="${new Date().toISOString().split('T')[0]}" required>
+                        <input type="number" id="input-weight" placeholder="Weight (kg)" step="0.1" required>
+                        <textarea id="input-notes" placeholder="Notes (optional)..." rows="2"></textarea>
+                        <button class="btn-primary" onclick="submitModal('weight')">Add</button>
+                    `
+                },
+                healthNote: {
+                    title: 'Add Health Note',
+                    html: `
+                        <input type="date" id="input-date" value="${new Date().toISOString().split('T')[0]}" required>
+                        <textarea id="input-note" placeholder="Health note..." rows="4" required></textarea>
+                        <button class="btn-primary" onclick="submitModal('healthNote')">Add</button>
+                    `
+                },
+                quran: {
+                    title: 'Track Surah Memorization',
+                    html: `
+                        <select id="input-surah" required>
+                            <option value="">Select a Surah...</option>
+                            ${generateSurahOptions()}
+                        </select>
+                        <textarea id="input-details" placeholder="Progress, verses memorized, notes..." rows="3"></textarea>
+                        <button class="btn-primary" onclick="submitModal('quran')">Add</button>
+                    `
+                },
+                goodDeed: {
+                    title: 'Record Good Deed ✨',
+                    html: `
+                        <input type="text" id="input-title" placeholder="What good deed did you do?" required>
+                        <textarea id="input-details" placeholder="Details..." rows="3"></textarea>
+                        <button class="btn-primary" onclick="submitModal('goodDeed')">Record</button>
+                    `
+                },
+                badDeed: {
+                    title: 'Record Mistake & Learn ⚠️',
+                    html: `
+                        <input type="text" id="input-title" placeholder="What happened?" required>
+                        <textarea id="input-details" placeholder="How to avoid this in future..." rows="3"></textarea>
+                        <button class="btn-primary" onclick="submitModal('badDeed')" style="background:#dc3545;">Record</button>
+                    `
+                },
+                school: {
+                    title: 'Add School Task',
+                    html: `
+                        <input type="text" id="input-title" placeholder="Task title" required>
+                        <textarea id="input-details" placeholder="Details..." rows="3"></textarea>
+                        <input type="date" id="input-deadline">
+                        <button class="btn-primary" onclick="submitModal('school')">Add</button>
+                    `
+                },
+                video: {
+                    title: 'Add Video Task',
+                    html: `
+                        <input type="text" id="input-title" placeholder="Video title" required>
+                        <textarea id="input-details" placeholder="Description..." rows="3"></textarea>
+                        <input type="date" id="input-deadline">
+                        <button class="btn-primary" onclick="submitModal('video')">Add</button>
+                    `
+                },
+                lesson: {
+                    title: 'Add Lesson Plan',
+                    html: `
+                        <select id="input-day" required>
+                            <option value="">Select Day...</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                        <input type="number" id="input-period" placeholder="Period number" min="1" max="8" required>
+                        <input type="text" id="input-title" placeholder="Lesson title" required>
+                        <textarea id="input-details" placeholder="Lesson plan..." rows="4"></textarea>
+                        <button class="btn-primary" onclick="submitModal('lesson')">Add</button>
+                    `
+                },
+                reminder: {
+                    title: 'Add Reminder',
+                    html: `
+                        <input type="text" id="input-title" placeholder="Reminder title" required>
+                        <input type="datetime-local" id="input-datetime" required>
+                        <textarea id="input-details" placeholder="Details..." rows="2"></textarea>
+                        <button class="btn-primary" onclick="submitModal('reminder')">Add</button>
+                    `
+                }
+            };
+            
+            if (modals[type]) {
+                title.textContent = modals[type].title;
+                body.innerHTML = modals[type].html;
+                modal.classList.add('active');
+            }
+        }
+
+        function generateSurahOptions() {
+            const surahs = [
+                "1. Al-Fatihah (The Opening)", "2. Al-Baqarah (The Cow)", "3. Ali 'Imran (Family of Imran)",
+                "4. An-Nisa (The Women)", "5. Al-Ma'idah (The Table)", "6. Al-An'am (The Cattle)",
+                "7. Al-A'raf (The Heights)", "8. Al-Anfal (The Spoils)", "9. At-Tawbah (Repentance)",
+                "10. Yunus (Jonah)", "11. Hud", "12. Yusuf (Joseph)", "13. Ar-Ra'd (The Thunder)",
+                "14. Ibrahim (Abraham)", "15. Al-Hijr", "16. An-Nahl (The Bee)", "17. Al-Isra (Night Journey)",
+                "18. Al-Kahf (The Cave)", "19. Maryam (Mary)", "20. Ta-Ha", "21. Al-Anbya (Prophets)",
+                "22. Al-Hajj (Pilgrimage)", "23. Al-Mu'minun (Believers)", "24. An-Nur (The Light)",
+                "25. Al-Furqan (The Criterion)", "26. Ash-Shu'ara (The Poets)", "27. An-Naml (The Ant)",
+                "28. Al-Qasas (The Stories)", "29. Al-'Ankabut (Spider)", "30. Ar-Rum (Romans)",
+                "31. Luqman", "32. As-Sajdah (Prostration)", "33. Al-Ahzab (Combined Forces)",
+                "34. Saba (Sheba)", "35. Fatir (Originator)", "36. Ya-Sin", "37. As-Saffat (Drawn Up)",
+                "38. Sad", "39. Az-Zumar (Troops)", "40. Ghafir (Forgiver)", "41. Fussilat (Explained)",
+                "42. Ash-Shuraa (Consultation)", "43. Az-Zukhruf (Gold)", "44. Ad-Dukhan (Smoke)",
+                "45. Al-Jathiyah (Crouching)", "46. Al-Ahqaf (Sand Dunes)", "47. Muhammad",
+                "48. Al-Fath (Victory)", "49. Al-Hujurat (Rooms)", "50. Qaf", "51. Adh-Dhariyat (Winds)",
+                "52. At-Tur (Mount)", "53. An-Najm (Star)", "54. Al-Qamar (Moon)", "55. Ar-Rahman (Beneficent)",
+                "56. Al-Waqi'ah (Inevitable)", "57. Al-Hadid (Iron)", "58. Al-Mujadila (Pleading)",
+                "59. Al-Hashr (Exile)", "60. Al-Mumtahanah (Examined)", "61. As-Saf (Ranks)",
+                "62. Al-Jumu'ah (Friday)", "63. Al-Munafiqun (Hypocrites)", "64. At-Taghabun (Disillusion)",
+                "65. At-Talaq (Divorce)", "66. At-Tahrim (Prohibition)", "67. Al-Mulk (Sovereignty)",
+                "68. Al-Qalam (Pen)", "69. Al-Haqqah (Reality)", "70. Al-Ma'arij (Stairways)",
+                "71. Nuh (Noah)", "72. Al-Jinn", "73. Al-Muzzammil (Enshrouded)", "74. Al-Muddaththir (Cloaked)",
+                "75. Al-Qiyamah (Resurrection)", "76. Al-Insan (Man)", "77. Al-Mursalat (Emissaries)",
+                "78. An-Naba (Tidings)", "79. An-Nazi'at (Drag Forth)", "80. 'Abasa (Frowned)",
+                "81. At-Takwir (Overthrowing)", "82. Al-Infitar (Cleaving)", "83. Al-Mutaffifin (Defrauding)",
+                "84. Al-Inshiqaq (Sundering)", "85. Al-Buruj (Mansions)", "86. At-Tariq (Morning Star)",
+                "87. Al-A'la (Most High)", "88. Al-Ghashiyah (Overwhelming)", "89. Al-Fajr (Dawn)",
+                "90. Al-Balad (City)", "91. Ash-Shams (Sun)", "92. Al-Layl (Night)", "93. Ad-Duhaa (Morning)",
+                "94. Ash-Sharh (Relief)", "95. At-Tin (Fig)", "96. Al-'Alaq (Clot)", "97. Al-Qadr (Power)",
+                "98. Al-Bayyinah (Clear Proof)", "99. Az-Zalzalah (Earthquake)", "100. Al-'Adiyat (Courser)",
+                "101. Al-Qari'ah (Calamity)", "102. At-Takathur (Competition)", "103. Al-'Asr (Time)",
+                "104. Al-Humazah (Traducer)", "105. Al-Fil (Elephant)", "106. Quraysh", "107. Al-Ma'un (Kindnesses)",
+                "108. Al-Kawthar (Abundance)", "109. Al-Kafirun (Disbelievers)", "110. An-Nasr (Support)",
+                "111. Al-Masad (Palm Fiber)", "112. Al-Ikhlas (Sincerity)", "113. Al-Falaq (Daybreak)",
+                "114. An-Nas (Mankind)"
+            ];
+            return surahs.map(s => `<option value="${s}">${s}</option>`).join('');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function submitModal(type) {
+            const item = { id: Date.now() };
+            
+            if (type === 'weight') {
+                item.date = document.getElementById('input-date').value;
+                item.weight = document.getElementById('input-weight').value;
+                item.notes = document.getElementById('input-notes').value || '';
+                if (!item.weight) return alert('Please enter weight');
+                appData.health.weight.push(item);
+            } 
+            else if (type === 'healthNote') {
+                item.date = document.getElementById('input-date').value;
+                item.note = document.getElementById('input-note').value;
+                if (!item.note) return alert('Please enter a note');
+                appData.health.notes.push(item);
+            } 
+            else if (type === 'quran') {
+                item.surah = document.getElementById('input-surah').value;
+                item.details = document.getElementById('input-details').value || '';
+                if (!item.surah) return alert('Please select a Surah');
+                appData.religious.quran.push(item);
+            } 
+            else if (type === 'goodDeed') {
+                item.title = document.getElementById('input-title').value;
+                item.details = document.getElementById('input-details').value || '';
+                item.date = new Date().toLocaleDateString();
+                if (!item.title) return alert('Please enter the good deed');
+                appData.religious.goodDeeds.push(item);
+            } 
+            else if (type === 'badDeed') {
+                item.title = document.getElementById('input-title').value;
+                item.details = document.getElementById('input-details').value || '';
+                item.date = new Date().toLocaleDateString();
+                if (!item.title) return alert('Please enter what happened');
+                appData.religious.badDeeds.push(item);
+            } 
+            else if (type === 'lesson') {
+                item.day = document.getElementById('input-day').value;
+                item.period = document.getElementById('input-period').value;
+                item.title = document.getElementById('input-title').value;
+                item.details = document.getElementById('input-details').value || '';
+                item.completed = false;
+                if (!item.day || !item.period || !item.title) return alert('Please fill required fields');
+                appData.professional.lesson.push(item);
+            } 
+            else if (type === 'reminder') {
+                item.title = document.getElementById('input-title').value;
+                item.datetime = document.getElementById('input-datetime').value;
+                item.details = document.getElementById('input-details').value || '';
+                item.completed = false;
+                if (!item.title || !item.datetime) return alert('Please fill required fields');
+                appData.professional.reminders.push(item);
+            } 
+            else {
+                item.title = document.getElementById('input-title').value;
+                item.details = document.getElementById('input-details').value || '';
+                item.deadline = document.getElementById('input-deadline') ? document.getElementById('input-deadline').value : '';
+                item.completed = false;
+                
+                if (!item.title) return alert('Please enter a title');
+                
+                if (type === 'school' || type === 'video') {
+                    appData.professional[type].push(item);
+                } else if (type === 'education' || type === 'visa' || type === 'license') {
+                    appData.personal[type].push(item);
+                }
+            }
+            
+            saveData();
+            renderAll();
+            closeModal();
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // RENDER FUNCTIONS
+        // ═══════════════════════════════════════════════════════════
+        
+        function renderAll() {
+            // Personal
+            renderList('education-list', appData.personal.education, 'education');
+            renderList('visa-list', appData.personal.visa, 'visa');
+            renderList('license-list', appData.personal.license, 'license');
+            
+            // Health
+            renderWeightList();
+            renderHealthNotes();
+            loadHabits();
+            
+            // Religious
+            renderFastingChart();
+            renderTaraweehChart();
+            renderQuranReadingChart();
+            renderJuzChart();
+            renderFivePrayersChart();
+            renderQuranList();
+            renderGoodDeeds();
+            renderBadDeeds();
+            loadRamadan();
+            
+            // Professional
+            renderList('school-list', appData.professional.school, 'school');
+            renderList('video-list', appData.professional.video, 'video');
+            renderList('lesson-list', appData.professional.lesson, 'lesson');
+            renderList('reminders-list', appData.professional.reminders, 'reminder');
+        }
+
+        function renderList(containerId, items, type) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            if (!items || items.length === 0) {
+                container.innerHTML = '<p class="empty-state">No items yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = items.map(item => `
+                <div class="item ${item.completed ? 'completed' : ''}">
+                    <input type="checkbox" class="item-checkbox" 
+                           ${item.completed ? 'checked' : ''} 
+                           onchange="toggleComplete('${type}', ${item.id})">
+                    <div class="item-content">
+                        <div class="item-title">${item.title || ''}</div>
+                        ${item.details ? `<div class="item-details">${item.details}</div>` : ''}
+                        ${item.deadline ? `<div class="item-details">📅 ${item.deadline}</div>` : ''}
+                        ${item.datetime ? `<div class="item-details">⏰ ${new Date(item.datetime).toLocaleString()}</div>` : ''}
+                        ${item.day && item.period ? `<div class="item-details">📅 ${item.day} Period ${item.period}</div>` : ''}
+                    </div>
+                    <button class="btn-delete" onclick="deleteItem('${type}', ${item.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderWeightList() {
+            const container = document.getElementById('weight-list');
+            if (!container) return;
+            
+            const weights = (appData.health.weight || []).sort((a,b) => new Date(b.date) - new Date(a.date));
+            if (weights.length === 0) {
+                container.innerHTML = '<p class="empty-state">No weight entries yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = weights.map(w => `
+                <div class="item">
+                    <div class="item-content">
+                        <div class="item-title">⚖️ ${w.weight} kg</div>
+                        <div class="item-details">📅 ${w.date}</div>
+                        ${w.notes ? `<div class="item-details">${w.notes}</div>` : ''}
+                    </div>
+                    <button class="btn-delete" onclick="deleteWeight(${w.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderHealthNotes() {
+            const container = document.getElementById('health-notes-list');
+            if (!container) return;
+            
+            const notes = appData.health.notes || [];
+            if (notes.length === 0) {
+                container.innerHTML = '<p class="empty-state">No notes yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = notes.map(n => `
+                <div class="item">
+                    <div class="item-content">
+                        <div class="item-title">📅 ${n.date || ''}</div>
+                        <div class="item-details">${n.note}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteHealthNote(${n.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderQuranList() {
+            const container = document.getElementById('quran-list');
+            if (!container) return;
+            
+            const surahs = appData.religious.quran || [];
+            if (surahs.length === 0) {
+                container.innerHTML = '<p class="empty-state">No surahs tracked yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = surahs.map(s => `
+                <div class="item">
+                    <div class="item-content">
+                        <div class="item-title">📖 ${s.surah}</div>
+                        ${s.details ? `<div class="item-details">${s.details}</div>` : ''}
+                    </div>
+                    <button class="btn-delete" onclick="deleteQuran(${s.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderGoodDeeds() {
+            const container = document.getElementById('good-deeds-list');
+            if (!container) return;
+            
+            const deeds = appData.religious.goodDeeds || [];
+            if (deeds.length === 0) {
+                container.innerHTML = '<p class="empty-state">No good deeds recorded yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = deeds.map(d => `
+                <div class="item">
+                    <div class="item-content">
+                        <div class="item-title">✨ ${d.title}</div>
+                        ${d.details ? `<div class="item-details">${d.details}</div>` : ''}
+                        <div class="item-details">📅 ${d.date}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteGoodDeed(${d.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        function renderBadDeeds() {
+            const container = document.getElementById('bad-deeds-list');
+            if (!container) return;
+            
+            const deeds = appData.religious.badDeeds || [];
+            if (deeds.length === 0) {
+                container.innerHTML = '<p class="empty-state">No mistakes recorded yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = deeds.map(d => `
+                <div class="item">
+                    <div class="item-content">
+                        <div class="item-title">⚠️ ${d.title}</div>
+                        ${d.details ? `<div class="item-details">${d.details}</div>` : ''}
+                        <div class="item-details">📅 ${d.date}</div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteBadDeed(${d.id})">🗑️</button>
+                </div>
+            `).join('');
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // DELETE FUNCTIONS
+        // ═══════════════════════════════════════════════════════════
+        
+        function deleteItem(type, id) {
+            if (!confirm('Delete this item?')) return;
+            
+            if (type === 'school' || type === 'video' || type === 'lesson' || type === 'reminder') {
+                // Handle reminder -> reminders conversion
+                const arrayKey = type === 'reminder' ? 'reminders' : type;
+                appData.professional[arrayKey] = (appData.professional[arrayKey] || []).filter(i => i.id !== id);
+            } else {
+                appData.personal[type] = (appData.personal[type] || []).filter(i => i.id !== id);
+            }
+            
+            saveData();
+            renderAll();
+        }
+
+        function deleteWeight(id) {
+            if (!confirm('Delete this weight entry?')) return;
+            appData.health.weight = (appData.health.weight || []).filter(w => w.id !== id);
+            saveData();
+            renderWeightList();
+        }
+
+        function deleteHealthNote(id) {
+            if (!confirm('Delete this note?')) return;
+            appData.health.notes = (appData.health.notes || []).filter(n => n.id !== id);
+            saveData();
+            renderHealthNotes();
+        }
+
+        function deleteQuran(id) {
+            if (!confirm('Delete this surah?')) return;
+            appData.religious.quran = (appData.religious.quran || []).filter(s => s.id !== id);
+            saveData();
+            renderQuranList();
+        }
+
+        function deleteGoodDeed(id) {
+            if (!confirm('Delete this good deed?')) return;
+            appData.religious.goodDeeds = (appData.religious.goodDeeds || []).filter(d => d.id !== id);
+            saveData();
+            renderGoodDeeds();
+        }
+
+        function deleteBadDeed(id) {
+            if (!confirm('Delete this mistake?')) return;
+            appData.religious.badDeeds = (appData.religious.badDeeds || []).filter(d => d.id !== id);
+            saveData();
+            renderBadDeeds();
+        }
+
+        function toggleComplete(type, id) {
+            let items;
+            if (type === 'school' || type === 'video' || type === 'lesson' || type === 'reminder') {
+                // Handle reminder -> reminders conversion
+                const arrayKey = type === 'reminder' ? 'reminders' : type;
+                items = appData.professional[arrayKey];
+            } else {
+                items = appData.personal[type];
+            }
+            
+            if (!items) return;
+            
+            const item = items.find(i => i.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                saveData();
+                renderAll();
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // HEALTH HABITS
+        // ═══════════════════════════════════════════════════════════
+        
+        function saveHabit(habit) {
+            const checkbox = document.getElementById(`habit-${habit}`);
+            const item = document.getElementById(`habit-${habit}-item`);
+            
+            appData.health.habits[habit] = checkbox.checked;
+            
+            if (checkbox.checked) {
+                item.classList.add('completed');
+            } else {
+                item.classList.remove('completed');
+            }
+            
+            saveData();
+        }
+
+        function loadHabits() {
+            const today = new Date().toDateString();
+            const lastReset = localStorage.getItem('lastHabitReset');
+            
+            if (lastReset !== today) {
+                appData.health.habits = {};
+                localStorage.setItem('lastHabitReset', today);
+            }
+            
+            ['wakeup', 'water', 'veg'].forEach(habit => {
+                const checkbox = document.getElementById(`habit-${habit}`);
+                const item = document.getElementById(`habit-${habit}-item`);
+                if (checkbox && item) {
+                    checkbox.checked = appData.health.habits[habit] || false;
+                    if (checkbox.checked) {
+                        item.classList.add('completed');
+                    } else {
+                        item.classList.remove('completed');
+                    }
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // RAMADAN ACTIVITIES
+        // ═══════════════════════════════════════════════════════════
+        
+        function saveRamadan(activity) {
+            const checkbox = document.getElementById(`ramadan-${activity}`);
+            appData.religious.ramadan[activity] = checkbox.checked;
+            saveData();
+        }
+
+        function loadRamadan() {
+            const today = new Date().toDateString();
+            const lastReset = localStorage.getItem('lastRamadanReset');
+            
+            if (lastReset !== today) {
+                appData.religious.ramadan = {};
+                localStorage.setItem('lastRamadanReset', today);
+            }
+            
+            ['suhoor', 'iftar', 'listen'].forEach(activity => {
+                const checkbox = document.getElementById(`ramadan-${activity}`);
+                if (checkbox) {
+                    checkbox.checked = appData.religious.ramadan[activity] || false;
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // PRAYER TIME & REMINDER NOTIFICATIONS
+        // ═══════════════════════════════════════════════════════════
+        
+        function checkPrayerTimes() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
+            Object.entries(PRAYER_TIMES).forEach(([prayer, time]) => {
+                if (currentHour === time.hour && currentMinute === time.minute) {
+                    const prayerName = prayer.charAt(0).toUpperCase() + prayer.slice(1);
+                    showNotification(`🕌 ${prayerName} Prayer Time`, `It's time for ${prayerName} prayer!`);
+                }
+            });
+        }
+
+        function checkReminders() {
+            const now = new Date();
+            const reminders = appData.professional.reminders || [];
+            
+            reminders.forEach(reminder => {
+                if (!reminder.completed && reminder.datetime) {
+                    const reminderTime = new Date(reminder.datetime);
+                    const diff = reminderTime - now;
+                    
+                    if (diff > 0 && diff < 60000) {
+                        showNotification(`⏰ Reminder: ${reminder.title}`, reminder.details || 'Time for your reminder!');
+                    }
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // DATA STORAGE
+        // ═══════════════════════════════════════════════════════════
+        
+        function saveData() {
+            try {
+                localStorage.setItem('lifeTrackerData', JSON.stringify(appData));
+            } catch (e) {
+                console.error('Error saving:', e);
+            }
+        }
+
+        function loadData() {
+            try {
+                const data = localStorage.getItem('lifeTrackerData');
+                if (data) {
+                    const loaded = JSON.parse(data);
+                    
+                    appData = {
+                        personal: {
+                            education: loaded.personal?.education || [],
+                            visa: loaded.personal?.visa || [],
+                            license: loaded.personal?.license || []
+                        },
+                        health: {
+                            habits: loaded.health?.habits || {},
+                            notes: loaded.health?.notes || [],
+                            weight: loaded.health?.weight || []
+                        },
+                        religious: {
+                            prayers: loaded.religious?.prayers || {},
+                            quran: loaded.religious?.quran || [],
+                            ramadan: loaded.religious?.ramadan || {},
+                            goodDeeds: loaded.religious?.goodDeeds || [],
+                            badDeeds: loaded.religious?.badDeeds || [],
+                            fastingChart: loaded.religious?.fastingChart || {},
+                            taraweehChart: loaded.religious?.taraweehChart || {},
+                            quranReadingChart: loaded.religious?.quranReadingChart || {},
+                            juzChart: loaded.religious?.juzChart || {},
+                            fivePrayersChart: loaded.religious?.fivePrayersChart || {}
+                        },
+                        professional: {
+                            school: loaded.professional?.school || [],
+                            video: loaded.professional?.video || [],
+                            lesson: loaded.professional?.lesson || [],
+                            reminders: loaded.professional?.reminders || []
+                        }
+                    };
+                }
+            } catch (e) {
+                console.error('Error loading:', e);
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Loading Life Tracker...');
+            loadData();
+            renderAll();
+            
+            setInterval(checkPrayerTimes, 60000);
+            setInterval(checkReminders, 60000);
+            
+            checkPrayerTimes();
+            checkReminders();
+            
+            console.log('✅ App loaded successfully!');
+        });
+    </script>
+</body>
+</html>
